@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# pyright: reportOptionalMemberAccess=false, pythonPlatform=All
+# pyright: reportOptionalMemberAccess=false
 
 """
 LibVirt network hook to configure systemd-resolved,
@@ -18,7 +18,7 @@ from pathlib import Path
 from shutil import which
 import xml.etree.ElementTree as ET
 
-# HOOK_LOGFILE = Path("/var/log/libvirt/qemu/hook-network-systemd-resolved-dns.log")
+HOOK_LOGFILE = Path("/var/log/libvirt/qemu/hook-network-systemd-resolved-dns.log")
 
 
 class LibVirtHookError(Exception):
@@ -32,16 +32,17 @@ class LibVirtHookResolvectlError(Exception):
     resolvectl command error
     """
 
-    pass
 
 if os.getenv("DEBUG", 0) == "1":
     logging.basicConfig(
+        filename=HOOK_LOGFILE,
         format="%(asctime)s  [%(levelname)-8s] %(message)s",
         level=logging.DEBUG,
         datefmt="%Y-%m-%d %H:%M:%S%z",
     )
 else:
     logging.basicConfig(
+        filename=HOOK_LOGFILE,
         format="%(asctime)s  [%(levelname)-8s] %(message)s",
         level=logging.INFO,
         datefmt="%Y-%m-%d %H:%M:%S%z",
@@ -116,7 +117,7 @@ def run_resolvectl_hook(subcommand: str, interface: str, value: str):
         )
 
 
-def run(network: str = None, operation: str = None, sub_op: str = "-"):
+def run(network: str, operation: str, sub_op: str = "-"):
     """
     Network Hook Runner
 
@@ -230,9 +231,7 @@ def run(network: str = None, operation: str = None, sub_op: str = "-"):
             logging.error("Domain name {libvirt_net_domain} is invalid!")
             return
 
-        logging.debug("Searching for PSL")
         psl_file = Path("/usr/share/publicsuffix/public_suffix_list.dat")
-
         psl_suffix_list = []
         if psl_file.exists() and psl_file.is_file():
             logging.info(f"Found PSL suffix data - {psl_file}")
@@ -244,9 +243,6 @@ def run(network: str = None, operation: str = None, sub_op: str = "-"):
                             and not line.strip().startswith("//")
                             and not line.isspace()
                         ):
-                            logging.debug(
-                                f"Including suffix in disalowed list - {line.strip()}"
-                            )
                             psl_suffix_list.append(line.strip())
             except IOError:
                 logging.error(f"Failed to open - {psl_file}")

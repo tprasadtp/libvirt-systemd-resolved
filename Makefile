@@ -10,3 +10,8 @@ help: ### This help message
 install: ### Install hooks (Requires Root)
 	@if [[ ! -e /etc/libvirt/hooks/network.d ]]; then install -g root -o root -m 755 /etc/libvirt/hooks/network.d; fi
 	install -g root -o root -m 755 systemd-resolved-dns /etc/libvirt/hooks/network.d/systemd-resolved-dns
+
+.PHONY: install-debug-hook
+install-debug-hook: ### Install debug-hook (Requires Root)
+	@if [[ ! -e /etc/libvirt/hooks/network.d ]]; then install -g root -o root -m 755 /etc/libvirt/hooks/network.d; fi
+	install -g root -o root -m 755 scripts/dump-hook-data /etc/libvirt/hooks/network.d/dump-hook-data

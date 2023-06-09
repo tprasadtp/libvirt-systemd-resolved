@@ -1,6 +1,6 @@
 #!/bin/bash
 printf "Hook received on $(date date --rfc-3339=s)" >> /var/log/libvirt/qemu/net-hook-dump.log
-printf "Arguments - $@ \n" >> /var/log/libvirt/qemu/net-hook-dump.log
+printf "Arguments - $* \n" >> /var/log/libvirt/qemu/net-hook-dump.log
 while IFS= read -r line; do
   printf "%s\n" "$line" >> /var/log/libvirt/qemu/net-hook-dump.log
 done
